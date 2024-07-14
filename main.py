@@ -1,8 +1,13 @@
 import requests
 from datetime import datetime
+import smtplib
 
 MY_LAT = 51.507351 #latitude
 MY_LONG = -0.127758 #longitude
+MY_EMAIL = "Example@gmail.com"
+MY_PASS = "example123!@#"
+
+
 
 def iss_overhead():
     response = requests.get(url="http://api.open-notify.org/iss-now.json")
@@ -30,6 +35,16 @@ def is_night():
     time_now = datetime.now()
     if time_now >= sunset or time_now <= sunrise:
         return True
+    
+if iss_overhead() and is_night():
+    connection = smtplib.SMTP("smtp.gmail.com")
+    connection.starttls()
+    connection.login(MY_EMAIL, MY_PASS)
+    connection.sendmail(
+        from_addr=MY_EMAIL,
+        to_addrs=MY_EMAIL,
+        msg="Subject:Look up\n\nThe ISS is above you in the sky!"
+    )
 
 #If the ISS is close to my current position
 # and it is currently dark
